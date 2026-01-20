@@ -17,7 +17,6 @@
                         'dal-blue': '#1E6091',
                         'dal-orange': '#E67E22',
                         'dal-bg': '#F2F0E4',
-                        'dal-card': '#E9E4D0'
                     },
                     borderRadius: { 'animal': '2rem' }
                 }
@@ -27,13 +26,13 @@
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #F7F4EB;
+            background-color: #E6F2F5; /* 輕盈的海島天空色 */
             color: #1E6091;
         }
         .dal-container {
             background-color: #1E6091;
             border-radius: 2rem;
-            padding: 1.5rem;
+            padding: 1.25rem;
             box-shadow: 0 10px 25px rgba(30, 96, 145, 0.2);
         }
         .dal-inner-card {
@@ -44,23 +43,23 @@
         .airport-label {
             background-color: #1E6091;
             color: white;
-            padding: 2px 12px;
+            padding: 2px 14px;
             border-radius: 999px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 900;
         }
         .info-box {
-            border: 2px solid #1E6091;
-            border-radius: 1rem;
+            border: 2.5px solid #1E6091;
+            border-radius: 1.2rem;
             padding: 8px;
             text-align: center;
         }
+        /* 莫里對話氣泡 */
         .status-bubble {
             background: white;
-            border-radius: 1rem;
+            border-radius: 1.2rem;
             position: relative;
         }
-        /* 對話框小尾巴 */
         .status-bubble::after {
             content: '';
             position: absolute;
@@ -71,6 +70,16 @@
             border-color: transparent white transparent transparent;
             border-style: solid;
         }
+        /* 編輯按鈕樣式 */
+        .edit-pill {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.2s;
+        }
+        .edit-pill:active {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+        }
         .force-uppercase { text-transform: uppercase; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
         .animal-hint { animation: bounce 2.5s infinite ease-in-out; }
@@ -79,42 +88,40 @@
 <body class="p-6 pb-28">
     <div id="app" class="max-w-md mx-auto">
         
-        <div class="flex flex-col items-center mb-6">
-            <div class="flex items-center gap-3">
-                <i class="fas fa-plane-slanted text-dal-blue text-4xl -rotate-12"></i>
-                <div class="text-center">
-                    <h1 class="text-4xl font-[900] tracking-tighter leading-none">DAL FLIGHTS</h1>
-                    <p class="text-[10px] font-bold tracking-[0.2em] opacity-80 mt-1 uppercase">Dodo Airlines - Seaplane Service</p>
-                </div>
-                <button @click="openEdit" class="ml-2 w-10 h-10 bg-dal-blue text-white rounded-full shadow-lg flex items-center justify-center">
-                    <i class="fas fa-pen text-sm"></i>
-                </button>
-            </div>
+        <div class="flex flex-col items-center mb-6 text-center">
+            <h1 class="text-4xl font-[900] tracking-tighter leading-none uppercase text-dal-blue italic">DAL Flights</h1>
+            <p class="text-[10px] font-bold tracking-[0.2em] opacity-80 mt-1 uppercase">Dodo Airlines - Seaplane Service</p>
         </div>
 
         <div class="dal-container">
-            <div class="flex justify-between items-center mb-4 px-2">
-                <div class="flex items-center gap-2 bg-white/10 p-2 rounded-xl">
-                    <div class="bg-white p-1 rounded-lg">
-                        <img src="https://api.iconify.design/emojione-v1:bird.svg" class="w-6 h-6" alt="DAL">
+            <div class="flex justify-between items-start mb-4 px-1">
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2 bg-white/10 p-2 rounded-xl w-fit">
+                        <div class="bg-white p-1 rounded-lg">
+                            <i class="fas fa-dove text-dal-blue text-sm"></i>
+                        </div>
+                        <span class="text-white font-black text-xs tracking-tight uppercase">Dodo Airlines</span>
                     </div>
-                    <span class="text-white font-black text-sm tracking-tight uppercase">Dodo Airlines</span>
+                    <button @click="openEdit" class="edit-pill px-3 py-1.5 rounded-full flex items-center gap-2 text-white shadow-sm">
+                        <i class="fas fa-pen-fancy text-[10px]"></i>
+                        <span class="text-[10px] font-black tracking-wider uppercase">編輯航班資訊</span>
+                    </button>
                 </div>
                 <div class="text-right">
-                    <p class="text-[9px] text-dal-orange font-black uppercase">Flight</p>
-                    <p class="text-2xl font-black text-white leading-none">{{ flight.no.toUpperCase() }}</p>
+                    <p class="text-[10px] text-dal-orange font-black uppercase mb-1">Flight</p>
+                    <p class="text-3xl font-black text-white leading-none uppercase tracking-tighter">{{ flight.no }}</p>
                 </div>
             </div>
 
             <div class="dal-inner-card p-6">
-                <div class="flex justify-between items-start mb-8">
-                    <div class="text-center w-24">
-                        <h2 class="text-4xl font-[900] leading-none mb-1">{{ flight.fromCode.toUpperCase() }}</h2>
-                        <p class="text-lg font-black text-dal-orange">{{ flight.depTime }}AM</p>
+                <div class="flex justify-between items-start mb-8 text-center">
+                    <div class="w-24">
+                        <h2 class="text-4xl font-[900] leading-none mb-1 uppercase">{{ flight.fromCode }}</h2>
+                        <p class="text-lg font-black text-dal-orange uppercase">{{ flight.depTime }} AM</p>
                         <div class="airport-label mt-2 inline-block">{{ getAirportInfo(flight.fromCode) }}</div>
                     </div>
 
-                    <div class="flex-1 flex flex-col items-center pt-2 px-2">
+                    <div class="flex-1 flex flex-col items-center pt-2 px-1">
                         <div class="flex items-center w-full justify-between opacity-40 mb-2">
                             <i class="fas fa-chevron-left text-[8px]"></i>
                             <div class="h-[2px] flex-1 border-t-2 border-dashed border-dal-blue mx-1"></div>
@@ -128,8 +135,8 @@
                     </div>
 
                     <div class="text-center w-24">
-                        <h2 class="text-4xl font-[900] leading-none mb-1">{{ flight.toCode.toUpperCase() }}</h2>
-                        <p class="text-lg font-black text-dal-orange">{{ flight.arrTime }}PM</p>
+                        <h2 class="text-4xl font-[900] leading-none mb-1 uppercase">{{ flight.toCode }}</h2>
+                        <p class="text-lg font-black text-dal-orange uppercase">{{ flight.arrTime }} PM</p>
                         <div class="airport-label mt-2 inline-block">{{ getAirportInfo(flight.toCode) }}</div>
                     </div>
                 </div>
@@ -137,30 +144,30 @@
                 <div class="grid grid-cols-3 gap-3 mb-8">
                     <div class="info-box">
                         <p class="text-[9px] font-black text-dal-orange uppercase">Date</p>
-                        <p class="text-[11px] font-black tracking-tighter">{{ flight.date.toUpperCase() }} {{ flight.year }}</p>
+                        <p class="text-[11px] font-black tracking-tighter uppercase">{{ flight.date }} {{ flight.year }}</p>
                     </div>
                     <div class="info-box">
                         <p class="text-[9px] font-black text-dal-orange uppercase">Gate</p>
-                        <p class="text-sm font-black">{{ flight.gate.toUpperCase() }}</p>
+                        <p class="text-sm font-black uppercase">{{ flight.gate }}</p>
                     </div>
                     <div class="info-box">
                         <p class="text-[9px] font-black text-dal-orange uppercase">Seat</p>
-                        <p class="text-sm font-black">{{ flight.seat.toUpperCase() }}</p>
+                        <p class="text-sm font-black uppercase">{{ flight.seat }}</p>
                     </div>
                 </div>
 
-                <div class="border-t-2 border-dashed border-dal-blue/30 mb-6"></div>
+                <div class="border-t-2 border-dashed border-dal-blue/20 mb-6"></div>
 
                 <div class="flex gap-4 items-stretch">
-                    <div class="bg-dal-blue text-white p-3 rounded-xl text-center min-w-[100px] flex flex-col justify-center">
+                    <div class="bg-dal-blue text-white p-3 rounded-xl text-center min-w-[100px] flex flex-col justify-center shadow-md">
                         <p class="text-[9px] font-bold uppercase opacity-70">Boarding</p>
-                        <p class="text-2xl font-black">10:00AM</p>
+                        <p class="text-2xl font-black uppercase">{{ flight.boardingTime }} AM</p>
                     </div>
                     
                     <div class="status-bubble flex-1 p-3 flex items-center gap-2 animal-hint">
                         <img src="https://api.iconify.design/twemoji:parrot.svg" class="w-8 h-8 flex-shrink-0" alt="Orville">
-                        <p class="text-[10px] font-black leading-tight">
-                            {{ statusMessage.toUpperCase() }}
+                        <p class="text-[10px] font-black leading-tight uppercase text-dal-blue">
+                            {{ statusMessage }}
                         </p>
                     </div>
                 </div>
@@ -169,79 +176,84 @@
 
         <transition name="fade">
             <div v-if="isEditing" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-dal-blue/80 backdrop-blur-sm">
-                <div class="bg-dal-bg w-full max-w-sm rounded-animal border-4 border-dal-blue p-6">
-                    <h2 class="text-xl font-black mb-6 text-dal-blue uppercase italic">Check-in Counter</h2>
-                    <div class="space-y-4 font-black">
+                <div class="bg-dal-bg w-full max-w-sm rounded-animal border-4 border-dal-blue p-6 shadow-2xl">
+                    <div class="flex items-center gap-2 mb-6 text-dal-blue">
+                        <i class="fas fa-pen-fancy"></i>
+                        <h2 class="text-xl font-[900] uppercase italic tracking-tighter">DAL Check-in Counter</h2>
+                    </div>
+                    
+                    <div class="space-y-4 font-black text-dal-blue">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="text-[10px] opacity-60">FLIGHT NO.</label>
+                                <label class="text-[10px] opacity-60 uppercase">Flight No.</label>
                                 <input v-model="tempFlight.no" type="text" class="w-full p-2 rounded-lg border-2 border-dal-blue force-uppercase">
                             </div>
                             <div>
-                                <label class="text-[10px] opacity-60">YEAR</label>
+                                <label class="text-[10px] opacity-60 uppercase">Year</label>
                                 <input v-model="tempFlight.year" type="number" class="w-full p-2 rounded-lg border-2 border-dal-blue">
                             </div>
                         </div>
+                        <div>
+                            <label class="text-[10px] opacity-60 uppercase">Date (e.g., 20 JAN)</label>
+                            <input v-model="tempFlight.date" type="text" class="w-full p-2 rounded-lg border-2 border-dal-blue force-uppercase">
+                        </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="text-[10px] opacity-60">FROM</label>
+                                <label class="text-[10px] opacity-60 uppercase">From (Code)</label>
                                 <input v-model="tempFlight.fromCode" maxlength="3" class="w-full p-2 rounded-lg border-2 border-dal-blue force-uppercase">
                             </div>
                             <div>
-                                <label class="text-[10px] opacity-60">TO</label>
+                                <label class="text-[10px] opacity-60 uppercase">To (Code)</label>
                                 <input v-model="tempFlight.toCode" maxlength="3" class="w-full p-2 rounded-lg border-2 border-dal-blue force-uppercase">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-[10px] opacity-60">GATE</label>
-                                <input v-model="tempFlight.gate" class="w-full p-2 rounded-lg border-2 border-dal-blue force-uppercase">
-                            </div>
-                            <div>
-                                <label class="text-[10px] opacity-60">SEAT</label>
-                                <input v-model="tempFlight.seat" class="w-full p-2 rounded-lg border-2 border-dal-blue force-uppercase">
-                            </div>
-                        </div>
                     </div>
+
                     <div class="flex gap-3 mt-8">
-                        <button @click="isEditing = false" class="flex-1 py-3 border-2 border-dal-blue rounded-full font-black">BACK</button>
-                        <button @click="saveFlight" class="flex-1 py-3 bg-dal-orange text-white rounded-full font-black shadow-lg">UPDATE</button>
+                        <button @click="isEditing = false" class="flex-1 py-3 border-2 border-dal-blue rounded-full font-black text-sm uppercase">Cancel</button>
+                        <button @click="saveFlight" class="flex-1 py-3 bg-dal-orange text-white rounded-full font-black shadow-lg text-sm uppercase">Confirm</button>
                     </div>
                 </div>
             </div>
         </transition>
 
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[85%] bg-dal-blue rounded-full p-2 flex justify-around shadow-2xl">
-            <button class="w-12 h-12 rounded-full bg-white text-dal-blue flex items-center justify-center"><i class="fas fa-calendar-alt"></i></button>
-            <button class="w-12 h-12 rounded-full text-white/40"><i class="fas fa-compass"></i></button>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[85%] bg-dal-blue rounded-full p-2 flex justify-around shadow-2xl z-50">
+            <button class="w-12 h-12 rounded-full bg-white text-dal-blue flex items-center justify-center shadow-sm"><i class="fas fa-plane"></i></button>
+            <button class="w-12 h-12 rounded-full text-white/40"><i class="fas fa-calendar-alt"></i></button>
             <button class="w-12 h-12 rounded-full text-white/40"><i class="fas fa-check-double"></i></button>
         </nav>
     </div>
 
     <script>
-        const { createApp, ref, reactive, computed, onMounted } = Vue;
+        const { createApp, ref, reactive, computed } = Vue;
         const airportMap = { 'TPE': '台北, 台灣', 'NRT': '東京成田, 日本', 'HKG': '香港, 中國', 'KIX': '大阪, 日本', 'ICN': '首爾, 韓國' };
 
         createApp({
             setup() {
                 const isEditing = ref(false);
-                const currentTime = ref(new Date());
-                const flight = reactive({ no: 'DAL-801', year: 2026, fromCode: 'TPE', toCode: 'NRT', depTime: '10:30', arrTime: '2:45', boardingTime: '10:00', date: '20 JAN', gate: 'B7', seat: '22A' });
+                const flight = reactive({ 
+                    no: 'DAL-801', year: 2026, fromCode: 'TPE', toCode: 'NRT', 
+                    depTime: '10:30', arrTime: '14:45', boardingTime: '10:00', 
+                    date: '20 JAN', gate: 'B7', seat: '22A' 
+                });
                 const tempFlight = reactive({ ...flight });
 
-                const getAirportInfo = (code) => airportMap[code?.toUpperCase()] || '未知目的地';
-                const durationText = computed(() => "4H 15M"); // 這裡可根據圖片固定或計算
-
-                const statusMessage = computed(() => {
-                    return "Flight is on time. Please be ready.";
-                });
+                const getAirportInfo = (code) => airportMap[code?.toUpperCase()] || '探索新的島嶼中';
+                const durationText = computed(() => "4H 15M");
+                const statusMessage = computed(() => "Flight is on time. Please have your ticket ready!");
 
                 const openEdit = () => { Object.assign(tempFlight, flight); isEditing.value = true; };
                 const saveFlight = () => { 
-                    Object.keys(tempFlight).forEach(key => { if(typeof tempFlight[key] === 'string') tempFlight[key] = tempFlight[key].toUpperCase(); });
+                    Object.keys(tempFlight).forEach(key => { 
+                        if(typeof tempFlight[key] === 'string') tempFlight[key] = tempFlight[key].toUpperCase(); 
+                    });
                     Object.assign(flight, tempFlight); 
+                    localStorage.setItem('dal_trip_v1', JSON.stringify(flight));
                     isEditing.value = false; 
                 };
+
+                const saved = localStorage.getItem('dal_trip_v1');
+                if (saved) Object.assign(flight, JSON.parse(saved));
 
                 return { isEditing, flight, tempFlight, durationText, statusMessage, openEdit, saveFlight, getAirportInfo };
             }
