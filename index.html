@@ -3,30 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>森之旅行手帳 - Travel Planner</title>
+    <title>森之行 - 旅遊手帳</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        paper: '#F7F4EB',
-                        clay: '#E0E5D5',
-                        leaf: '#88A47C',
-                        wood: '#6B4F3B',
-                        sunset: '#EFAD8E',
-                        water: '#A8D1D1',
+                        'paper': '#F7F4EB', // 米色底
+                        'leaf': '#88A47C',  // 動森綠
+                        'wood': '#6B4F3B',  // 木質褐
+                        'sand': '#E0E5D5',  // 陰影色
+                        'sky': '#A8D1D1',   // 水色
+                        'sunset': '#EFAD8E' // 暖橘
                     },
-                    borderRadius: {
-                        'animal': '24px',
-                    },
-                    boxShadow: {
-                        'soft': '4px 4px 0px #E0E5D5',
-                    }
+                    borderRadius: { 'xl-plus': '2rem' },
+                    boxShadow: { 'handdrawn': '5px 5px 0px #E0E5D5' }
                 }
             }
         }
@@ -35,210 +31,152 @@
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background-color: #F7F4EB;
-            background-image: radial-gradient(#E0E5D5 1.5px, transparent 1.5px);
-            background-size: 24px 24px;
+            background-image: radial-gradient(#E0E5D5 1.2px, transparent 1.2px);
+            background-size: 20px 20px;
             color: #6B4F3B;
-            overscroll-behavior-y: contain;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        .tab-active { color: #88A47C; transform: translateY(-4px); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .active-press { transition: transform 0.1s; }
-        .active-press:active { transform: scale(0.95); }
+        .boarding-pass {
+            position: relative;
+            background: white;
+            border: 3px solid #6B4F3B;
+            border-radius: 1.5rem;
+            filter: drop-shadow(4px 4px 0px #E0E5D5);
+        }
+        /* 登機證缺口設計 */
+        .boarding-pass::before, .boarding-pass::after {
+            content: "";
+            position: absolute;
+            bottom: 85px;
+            width: 30px;
+            height: 30px;
+            background-color: #F7F4EB;
+            border: 3px solid #6B4F3B;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .boarding-pass::before { left: -18px; }
+        .boarding-pass::after { right: -18px; }
         
-        /* 模擬登機證缺口 */
-        .ticket-cut {
+        .dashed-line {
+            border-top: 3px dashed #E0E5D5;
             position: relative;
         }
-        .ticket-cut::before, .ticket-cut::after {
-            content: '';
-            position: absolute;
-            bottom: 40px;
-            width: 20px;
-            height: 20px;
-            background: #F7F4EB;
-            border-radius: 50%;
-        }
-        .ticket-cut::before { left: -10px; }
-        .ticket-cut::after { right: -10px; }
     </style>
 </head>
-<body class="pb-24">
-    <div id="app">
-        <header class="p-6 pb-2">
-            <h1 class="text-2xl font-bold flex items-center gap-2">
-                <i class="fas fa-leaf text-leaf"></i> {{ currentTabTitle }}
-            </h1>
+<body class="p-4 pb-24">
+    <div id="app" class="max-w-md mx-auto">
+        <header class="flex items-center justify-between mb-8 px-2">
+            <div>
+                <h1 class="text-3xl font-bold text-leaf flex items-center gap-2">
+                    <i class="fas fa-plane-departure"></i> 航班資訊
+                </h1>
+                <p class="text-wood opacity-60 font-bold italic">Enjoy your flight!</p>
+            </div>
+            <div class="w-12 h-12 bg-white rounded-full border-2 border-wood shadow-sm flex items-center justify-center overflow-hidden">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" alt="Avatar">
+            </div>
         </header>
 
-        <main class="px-5">
-            
-            <div v-if="activeTab === 'schedule'" class="space-y-6">
-                <div class="flex gap-3 overflow-x-auto hide-scrollbar py-2">
-                    <div v-for="d in 5" :key="d" 
-                         @click="selectedDate = d"
-                         :class="selectedDate === d ? 'bg-leaf text-white shadow-soft' : 'bg-white border-2 border-clay'"
-                         class="flex-shrink-0 w-16 h-20 rounded-animal flex flex-col items-center justify-center cursor-pointer active-press">
-                        <span class="text-xs">Day</span>
-                        <span class="text-xl font-bold">{{ d }}</span>
+        <div class="boarding-pass mb-10 overflow-hidden">
+            <div class="bg-sunset p-4 text-white flex justify-between items-center border-b-2 border-wood">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-leaf text-2xl"></i>
+                    <span class="font-bold tracking-widest">NOOK AIRLINES</span>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] opacity-80 uppercase">Flight No.</p>
+                    <p class="font-bold">JX-801</p>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="text-center">
+                        <h2 class="text-4xl font-bold">TPE</h2>
+                        <p class="text-sm font-bold opacity-60">TAIPEI</p>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center px-4">
+                        <i class="fas fa-plane text-leaf text-2xl mb-1"></i>
+                        <div class="w-full h-[2px] bg-sand relative">
+                            <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-wood"></div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-4xl font-bold">NRT</h2>
+                        <p class="text-sm font-bold opacity-60">TOKYO</p>
                     </div>
                 </div>
 
-                <div class="bg-water/30 p-4 rounded-animal border-2 border-water flex items-center justify-between">
+                <div class="grid grid-cols-3 gap-4 mb-12">
                     <div>
-                        <p class="font-bold">今日天氣：晴時多雲</p>
-                        <p class="text-sm">氣溫：22°C - 26°C</p>
+                        <p class="text-[10px] opacity-60 font-bold uppercase">Date</p>
+                        <p class="font-bold">20 JAN</p>
                     </div>
-                    <i class="fas fa-cloud-sun text-4xl text-white"></i>
-                </div>
-
-                <div class="space-y-4 relative before:content-[''] before:absolute before:left-4 before:top-0 before:bottom-0 before:w-1 before:bg-clay">
-                    <div v-for="item in scheduleItems" :key="item.time" class="relative pl-10">
-                        <div class="absolute left-2.5 top-2 w-4 h-4 rounded-full bg-leaf border-4 border-white"></div>
-                        <div class="bg-white p-4 rounded-animal shadow-soft border-2 border-clay active-press" @click="openGoogleMaps(item.location)">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-xs font-bold px-2 py-1 rounded-full bg-clay text-wood">{{ item.time }}</span>
-                                <span :class="item.typeColor" class="text-xs text-white px-2 py-1 rounded-full">{{ item.category }}</span>
-                            </div>
-                            <h3 class="font-bold text-lg leading-tight">{{ item.title }}</h3>
-                            <p class="text-sm opacity-70 mt-1"><i class="fas fa-location-dot"></i> {{ item.location }}</p>
-                        </div>
+                    <div>
+                        <p class="text-[10px] opacity-60 font-bold uppercase">Gate</p>
+                        <p class="font-bold">B7</p>
                     </div>
-                </div>
-            </div>
-
-            <div v-if="activeTab === 'bookings'" class="space-y-6">
-                <div class="bg-white rounded-animal border-2 border-clay shadow-soft ticket-cut overflow-hidden">
-                    <div class="bg-sunset p-4 text-white flex justify-between">
-                        <span class="font-bold">星宇航空 JX801</span>
-                        <i class="fas fa-plane"></i>
-                    </div>
-                    <div class="p-6 flex justify-between items-center border-b-2 border-dashed border-clay pb-10">
-                        <div class="text-center">
-                            <p class="text-2xl font-bold">TPE</p>
-                            <p class="text-xs opacity-60">台北</p>
-                        </div>
-                        <i class="fas fa-arrow-right text-clay"></i>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold">NRT</p>
-                            <p class="text-xs opacity-60">東京成田</p>
-                        </div>
-                    </div>
-                    <div class="p-4 flex justify-between text-sm">
-                        <span>GATE: B7</span>
-                        <span>SEAT: 22A</span>
-                        <span class="font-bold">10:30 AM</span>
+                    <div>
+                        <p class="text-[10px] opacity-60 font-bold uppercase">Seat</p>
+                        <p class="font-bold">22A</p>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-animal border-2 border-clay shadow-soft overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=60" class="w-full h-32 object-cover" />
-                    <div class="p-4">
-                        <h3 class="font-bold text-lg">星野度假村 - 輕井澤</h3>
-                        <p class="text-xs opacity-70 mb-2 italic text-leaf">Check-in: 15:00</p>
-                        <button class="w-full py-2 bg-clay/30 rounded-full text-sm font-bold active-press">查看入住憑證</button>
+                <div class="dashed-line mb-8"></div>
+
+                <div class="flex justify-between items-end">
+                    <div>
+                        <p class="text-[10px] opacity-60 font-bold uppercase">Boarding Time</p>
+                        <p class="text-3xl font-bold text-wood">10:20 <span class="text-sm">AM</span></p>
                     </div>
+                    <button @click="openNavigation" class="bg-leaf hover:bg-green-700 text-white px-6 py-3 rounded-full font-bold shadow-handdrawn active:scale-95 transition-all flex items-center gap-2">
+                        <i class="fas fa-location-arrow"></i> 導航至機場
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div v-if="activeTab === 'expense'" class="space-y-6">
-                <div class="bg-leaf p-6 rounded-animal shadow-soft text-white">
-                    <p class="text-sm opacity-80">目前總支出 (HKD)</p>
-                    <h2 class="text-4xl font-bold">$ 12,450.00</h2>
-                    <div class="mt-4 flex gap-4 text-xs">
-                        <span class="bg-white/20 px-2 py-1 rounded">JPY 250,000</span>
-                        <span class="bg-white/20 px-2 py-1 rounded">Rate: 0.052</span>
-                    </div>
-                </div>
-                
-                <button class="w-full py-4 bg-white border-2 border-clay rounded-animal shadow-soft font-bold active-press">
-                    <i class="fas fa-plus-circle text-leaf"></i> 新增一筆消費
-                </button>
+        <div class="bg-white border-2 border-wood p-4 rounded-2xl shadow-handdrawn mb-6">
+            <h3 class="font-bold mb-2 flex items-center gap-2">
+                <i class="fas fa-info-circle text-sky"></i> 機場備註
+            </h3>
+            <ul class="text-sm space-y-2 opacity-80">
+                <li>• 請於起飛前 3 小時到達桃園機場 T2。</li>
+                <li>• 記得準備好 Visit Japan Web QR Code。</li>
+            </ul>
+        </div>
 
-                <div class="space-y-3">
-                    <div v-for="i in 3" class="bg-white p-4 rounded-animal border-2 border-clay flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-sunset/20 flex items-center justify-center text-sunset">
-                                <i class="fas fa-utensils"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold">拉麵一蘭</p>
-                                <p class="text-xs opacity-50">下午 1:20 · 小明支付</p>
-                            </div>
-                        </div>
-                        <p class="font-bold">¥ 1,200</p>
-                    </div>
-                </div>
-            </div>
-
-            <div v-if="activeTab === 'planning'" class="space-y-4">
-                <div class="bg-white p-5 rounded-animal border-2 border-clay shadow-soft">
-                    <h3 class="font-bold mb-3 flex items-center gap-2"><i class="fas fa-check-square text-leaf"></i> 待辦清單</h3>
-                    <div class="space-y-2">
-                        <label v-for="todo in todos" class="flex items-center gap-3 p-2 bg-paper rounded-lg">
-                            <input type="checkbox" class="w-5 h-5 accent-leaf">
-                            <span class="text-sm">{{ todo }}</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-5 rounded-animal border-2 border-clay shadow-soft">
-                    <h3 class="font-bold mb-3 flex items-center gap-2"><i class="fas fa-bag-shopping text-sunset"></i> 購物清單</h3>
-                    <div class="grid grid-cols-2 gap-2 text-sm">
-                        <div class="p-2 border border-clay rounded-lg">合利他命 EX</div>
-                        <div class="p-2 border border-clay rounded-lg">洗面乳補充包</div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-
-        <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-clay px-6 py-4 flex justify-between items-center z-50 rounded-t-animal">
-            <div v-for="tab in tabs" :key="tab.id" 
-                 @click="activeTab = tab.id"
-                 :class="activeTab === tab.id ? 'tab-active font-bold' : 'opacity-40'"
-                 class="flex flex-col items-center gap-1 transition-all duration-300 cursor-pointer">
-                <i :class="tab.icon" class="text-xl"></i>
-                <span class="text-[10px]">{{ tab.name }}</span>
-            </div>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-white border-2 border-wood rounded-full p-2 flex justify-around items-center shadow-lg z-50">
+            <button class="w-12 h-12 rounded-full bg-leaf text-white flex items-center justify-center active:scale-90 transition-all">
+                <i class="fas fa-plane"></i>
+            </button>
+            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center">
+                <i class="fas fa-calendar-day"></i>
+            </button>
+            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center">
+                <i class="fas fa-coins"></i>
+            </button>
+            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center">
+                <i class="fas fa-tasks"></i>
+            </button>
         </nav>
     </div>
 
     <script>
-        const { createApp, ref, computed } = Vue;
-
+        const { createApp } = Vue;
         createApp({
             setup() {
-                const activeTab = ref('schedule');
-                const selectedDate = ref(1);
-                
-                const tabs = [
-                    { id: 'schedule', name: '行程', icon: 'fas fa-calendar-alt' },
-                    { id: 'bookings', name: '預訂', icon: 'fas fa-ticket' },
-                    { id: 'expense', name: '記帳', icon: 'fas fa-coins' },
-                    { id: 'planning', name: '準備', icon: 'fas fa-clipboard-list' }
-                ];
-
-                const currentTabTitle = computed(() => {
-                    return tabs.find(t => t.id === activeTab.value).name + '規劃';
-                });
-
-                const scheduleItems = [
-                    { time: '09:00', title: '成田機場接機', location: 'Narita Airport', category: '交通', typeColor: 'bg-sunset' },
-                    { time: '12:30', title: '淺草寺雷門漫步', location: 'Senso-ji', category: '景點', typeColor: 'bg-leaf' },
-                    { time: '14:00', title: '附近天婦羅午餐', location: 'Asakusa Tanaka', category: '美食', typeColor: 'bg-orange-400' },
-                    { time: '18:00', title: '入住飯店', location: 'Shinjuku Prince Hotel', category: '住宿', typeColor: 'bg-water' },
-                ];
-
-                const todos = ['更換日幣', '確認漫遊流量', '下載數位憑證', '準備環保餐具'];
-
-                const openGoogleMaps = (loc) => {
-                    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`;
+                // 整合 Google Maps 導航功能
+                const openNavigation = () => {
+                    const destination = "桃園國際機場第二航廈";
+                    // 偵測裝置開啟對應地圖
+                    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
                     window.open(url, '_blank');
                 };
 
-                return {
-                    activeTab, tabs, currentTabTitle, selectedDate, scheduleItems, todos, openGoogleMaps
-                }
+                return { openNavigation }
             }
         }).mount('#app');
     </script>
