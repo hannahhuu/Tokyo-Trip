@@ -7,21 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'paper': '#F7F4EB', // 米色底
-                        'leaf': '#88A47C',  // 動森綠
-                        'wood': '#6B4F3B',  // 木質褐
-                        'sand': '#E0E5D5',  // 陰影色
-                        'sky': '#A8D1D1',   // 水色
-                        'sunset': '#EFAD8E' // 暖橘
+                        'paper': '#F7F4EB', 'leaf': '#88A47C', 'wood': '#6B4F3B',
+                        'sand': '#E0E5D5', 'sky': '#A8D1D1', 'sunset': '#EFAD8E'
                     },
-                    borderRadius: { 'xl-plus': '2rem' },
+                    borderRadius: { 'animal': '1.5rem' },
                     boxShadow: { 'handdrawn': '5px 5px 0px #E0E5D5' }
                 }
             }
@@ -34,8 +30,6 @@
             background-image: radial-gradient(#E0E5D5 1.2px, transparent 1.2px);
             background-size: 20px 20px;
             color: #6B4F3B;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
         .boarding-pass {
             position: relative;
@@ -44,25 +38,14 @@
             border-radius: 1.5rem;
             filter: drop-shadow(4px 4px 0px #E0E5D5);
         }
-        /* 登機證缺口設計 */
         .boarding-pass::before, .boarding-pass::after {
-            content: "";
-            position: absolute;
-            bottom: 85px;
-            width: 30px;
-            height: 30px;
-            background-color: #F7F4EB;
-            border: 3px solid #6B4F3B;
-            border-radius: 50%;
-            z-index: 10;
+            content: ""; position: absolute; bottom: 85px; width: 30px; height: 30px;
+            background-color: #F7F4EB; border: 3px solid #6B4F3B; border-radius: 50%; z-index: 10;
         }
         .boarding-pass::before { left: -18px; }
         .boarding-pass::after { right: -18px; }
-        
-        .dashed-line {
-            border-top: 3px dashed #E0E5D5;
-            position: relative;
-        }
+        .dashed-line { border-top: 3px dashed #E0E5D5; position: relative; }
+        .modal-bg { background-color: rgba(107, 79, 59, 0.4); backdrop-filter: blur(4px); }
     </style>
 </head>
 <body class="p-4 pb-24">
@@ -72,11 +55,11 @@
                 <h1 class="text-3xl font-bold text-leaf flex items-center gap-2">
                     <i class="fas fa-plane-departure"></i> 航班資訊
                 </h1>
-                <p class="text-wood opacity-60 font-bold italic">Enjoy your flight!</p>
+                <p class="text-wood opacity-60 font-bold italic">準備好出發了嗎？</p>
             </div>
-            <div class="w-12 h-12 bg-white rounded-full border-2 border-wood shadow-sm flex items-center justify-center overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" alt="Avatar">
-            </div>
+            <button @click="isEditing = true" class="w-12 h-12 bg-white rounded-full border-2 border-wood shadow-handdrawn flex items-center justify-center text-wood active:scale-90 transition-all">
+                <i class="fas fa-pen-nib text-lg"></i>
+            </button>
         </header>
 
         <div class="boarding-pass mb-10 overflow-hidden">
@@ -87,40 +70,40 @@
                 </div>
                 <div class="text-right">
                     <p class="text-[10px] opacity-80 uppercase">Flight No.</p>
-                    <p class="font-bold">JX-801</p>
+                    <p class="font-bold">{{ flight.no }}</p>
                 </div>
             </div>
 
             <div class="p-6">
                 <div class="flex justify-between items-center mb-8">
-                    <div class="text-center">
-                        <h2 class="text-4xl font-bold">TPE</h2>
-                        <p class="text-sm font-bold opacity-60">TAIPEI</p>
+                    <div class="text-center w-24">
+                        <h2 class="text-4xl font-bold">{{ flight.fromCode }}</h2>
+                        <p class="text-xs font-bold opacity-60 truncate">{{ flight.fromCity }}</p>
                     </div>
-                    <div class="flex-1 flex flex-col items-center px-4">
+                    <div class="flex-1 flex flex-col items-center px-2">
                         <i class="fas fa-plane text-leaf text-2xl mb-1"></i>
                         <div class="w-full h-[2px] bg-sand relative">
                             <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-wood"></div>
                         </div>
                     </div>
-                    <div class="text-center">
-                        <h2 class="text-4xl font-bold">NRT</h2>
-                        <p class="text-sm font-bold opacity-60">TOKYO</p>
+                    <div class="text-center w-24">
+                        <h2 class="text-4xl font-bold">{{ flight.toCode }}</h2>
+                        <p class="text-xs font-bold opacity-60 truncate">{{ flight.toCity }}</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-4 mb-12">
                     <div>
                         <p class="text-[10px] opacity-60 font-bold uppercase">Date</p>
-                        <p class="font-bold">20 JAN</p>
+                        <p class="font-bold">{{ flight.date }}</p>
                     </div>
                     <div>
                         <p class="text-[10px] opacity-60 font-bold uppercase">Gate</p>
-                        <p class="font-bold">B7</p>
+                        <p class="font-bold">{{ flight.gate }}</p>
                     </div>
                     <div>
                         <p class="text-[10px] opacity-60 font-bold uppercase">Seat</p>
-                        <p class="font-bold">22A</p>
+                        <p class="font-bold">{{ flight.seat }}</p>
                     </div>
                 </div>
 
@@ -129,54 +112,108 @@
                 <div class="flex justify-between items-end">
                     <div>
                         <p class="text-[10px] opacity-60 font-bold uppercase">Boarding Time</p>
-                        <p class="text-3xl font-bold text-wood">10:20 <span class="text-sm">AM</span></p>
+                        <p class="text-3xl font-bold text-wood">{{ flight.time }} <span class="text-sm">AM</span></p>
                     </div>
-                    <button @click="openNavigation" class="bg-leaf hover:bg-green-700 text-white px-6 py-3 rounded-full font-bold shadow-handdrawn active:scale-95 transition-all flex items-center gap-2">
-                        <i class="fas fa-location-arrow"></i> 導航至機場
+                    <button @click="openNavigation" class="bg-leaf text-white px-6 py-3 rounded-full font-bold shadow-handdrawn active:scale-95 transition-all flex items-center gap-2">
+                        <i class="fas fa-location-arrow"></i> 導航
                     </button>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white border-2 border-wood p-4 rounded-2xl shadow-handdrawn mb-6">
-            <h3 class="font-bold mb-2 flex items-center gap-2">
-                <i class="fas fa-info-circle text-sky"></i> 機場備註
-            </h3>
-            <ul class="text-sm space-y-2 opacity-80">
-                <li>• 請於起飛前 3 小時到達桃園機場 T2。</li>
-                <li>• 記得準備好 Visit Japan Web QR Code。</li>
-            </ul>
-        </div>
+        <transition name="fade">
+            <div v-if="isEditing" class="fixed inset-0 z-[100] modal-bg flex items-center justify-center p-6">
+                <div class="bg-paper w-full max-w-sm rounded-animal border-4 border-wood p-6 shadow-2xl">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-edit text-sunset"></i> 修改旅程資料
+                    </h2>
+                    
+                    <div class="space-y-3 overflow-y-auto max-h-[60vh] pr-2">
+                        <div>
+                            <label class="text-xs font-bold opacity-60">航班編號 (例如: JX-801)</label>
+                            <input v-model="tempFlight.no" type="text" class="w-full p-2 rounded-lg border-2 border-wood mt-1 uppercase">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-bold opacity-60">出發機場碼 (TPE)</label>
+                                <input v-model="tempFlight.fromCode" type="text" class="w-full p-2 rounded-lg border-2 border-wood mt-1 uppercase">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold opacity-60">目的地碼 (NRT)</label>
+                                <input v-model="tempFlight.toCode" type="text" class="w-full p-2 rounded-lg border-2 border-wood mt-1 uppercase">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold opacity-60">日期 (例如: 20 JAN)</label>
+                            <input v-model="tempFlight.date" type="text" class="w-full p-2 rounded-lg border-2 border-wood mt-1">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-bold opacity-60">登機門</label>
+                                <input v-model="tempFlight.gate" type="text" class="w-full p-2 rounded-lg border-2 border-wood mt-1">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold opacity-60">座位</label>
+                                <input v-model="tempFlight.seat" type="text" class="w-full p-2 rounded-lg border-2 border-wood mt-1">
+                            </div>
+                        </div>
+                    </div>
 
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-white border-2 border-wood rounded-full p-2 flex justify-around items-center shadow-lg z-50">
-            <button class="w-12 h-12 rounded-full bg-leaf text-white flex items-center justify-center active:scale-90 transition-all">
-                <i class="fas fa-plane"></i>
-            </button>
-            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center">
-                <i class="fas fa-calendar-day"></i>
-            </button>
-            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center">
-                <i class="fas fa-coins"></i>
-            </button>
-            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center">
-                <i class="fas fa-tasks"></i>
-            </button>
+                    <div class="flex gap-3 mt-6">
+                        <button @click="isEditing = false" class="flex-1 py-3 border-2 border-wood rounded-full font-bold active:scale-95">取消</button>
+                        <button @click="saveFlight" class="flex-1 py-3 bg-leaf text-white rounded-full font-bold shadow-handdrawn active:scale-95">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-white/90 backdrop-blur-sm border-2 border-wood rounded-full p-2 flex justify-around items-center shadow-lg z-50">
+            <button class="w-12 h-12 rounded-full bg-leaf text-white flex items-center justify-center shadow-sm"><i class="fas fa-plane"></i></button>
+            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center"><i class="fas fa-calendar-day"></i></button>
+            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center"><i class="fas fa-coins"></i></button>
+            <button class="w-12 h-12 rounded-full text-wood opacity-40 flex items-center justify-center"><i class="fas fa-tasks"></i></button>
         </nav>
     </div>
 
     <script>
-        const { createApp } = Vue;
+        const { createApp, ref, reactive } = Vue;
         createApp({
             setup() {
-                // 整合 Google Maps 導航功能
+                const isEditing = ref(false);
+                
+                // 預設航班資料
+                const flight = reactive({
+                    no: 'JX-801',
+                    fromCode: 'TPE',
+                    fromCity: 'TAIPEI',
+                    toCode: 'NRT',
+                    toCity: 'TOKYO',
+                    date: '20 JAN',
+                    gate: 'B7',
+                    seat: '22A',
+                    time: '10:20'
+                });
+
+                // 編輯用的暫存資料
+                const tempFlight = reactive({ ...flight });
+
+                const saveFlight = () => {
+                    Object.assign(flight, tempFlight);
+                    isEditing.value = false;
+                    // 可進階加入 localStorage 儲存，讓重新整理後資料還在
+                    localStorage.setItem('tripData', JSON.stringify(flight));
+                };
+
                 const openNavigation = () => {
-                    const destination = "桃園國際機場第二航廈";
-                    // 偵測裝置開啟對應地圖
-                    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+                    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(flight.fromCode + ' Airport')}`;
                     window.open(url, '_blank');
                 };
 
-                return { openNavigation }
+                // 載入存過的資料
+                const saved = localStorage.getItem('tripData');
+                if (saved) Object.assign(flight, JSON.parse(saved));
+
+                return { isEditing, flight, tempFlight, saveFlight, openNavigation }
             }
         }).mount('#app');
     </script>
