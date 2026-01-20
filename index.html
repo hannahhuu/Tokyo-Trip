@@ -17,8 +17,7 @@
                         'paper': '#F7F4EB', 'leaf': '#88A47C', 'wood': '#6B4F3B',
                         'sand': '#E0E5D5', 'sky': '#A8D1D1', 'sunset': '#EFAD8E'
                     },
-                    borderRadius: { 'animal': '1.5rem' },
-                    boxShadow: { 'handdrawn': '5px 5px 0px #E0E5D5' }
+                    borderRadius: { 'animal': '1.5rem' }
                 }
             }
         }
@@ -42,10 +41,15 @@
             content: ""; position: absolute; bottom: 105px; width: 30px; height: 30px;
             background-color: #F7F4EB; border: 3px solid #6B4F3B; border-radius: 50%; z-index: 10;
         }
-        .boarding-pass::before { left: -18px; border: 3px solid #6B4F3B; }
-        .boarding-pass::after { right: -18px; border: 3px solid #6B4F3B; }
+        .boarding-pass::before { left: -18px; }
+        .boarding-pass::after { right: -18px; }
         .dashed-line { border-top: 3px dashed #E0E5D5; position: relative; }
-        .airport-tag { background-color: rgba(136, 164, 124, 0.1); border-radius: 8px; padding: 2px 6px; }
+        .airport-tag { 
+            background-color: rgba(136, 164, 124, 0.12); 
+            border-radius: 6px; 
+            padding: 2px 8px;
+            transform: rotate(-1deg);
+        }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
         .animal-hint { animation: bounce 2s infinite ease-in-out; }
     </style>
@@ -59,7 +63,7 @@
                 </h1>
                 <p class="text-wood opacity-60 font-bold italic text-sm">Nook Getaway Package</p>
             </div>
-            <button @click="openEdit" class="w-12 h-12 bg-white rounded-full border-2 border-wood shadow-handdrawn flex items-center justify-center text-wood active:scale-90 transition-all">
+            <button @click="openEdit" class="w-12 h-12 bg-white rounded-full border-2 border-wood shadow-[4px_4px_0px_#E0E5D5] flex items-center justify-center text-wood active:scale-90 transition-all">
                 <i class="fas fa-edit"></i>
             </button>
         </header>
@@ -82,7 +86,7 @@
                         <h2 class="text-4xl font-bold leading-none">{{ flight.fromCode }}</h2>
                         <p class="text-lg font-bold mt-1 text-wood">{{ flight.depTime }}</p>
                         <div class="airport-tag mt-2 inline-block">
-                            <p class="text-[10px] font-bold text-leaf leading-tight uppercase italic">{{ getAirportInfo(flight.fromCode) }}</p>
+                            <p class="text-[10px] font-bold text-leaf leading-tight italic">{{ getAirportInfo(flight.fromCode) }}</p>
                         </div>
                     </div>
                     
@@ -98,7 +102,7 @@
                         <h2 class="text-4xl font-bold leading-none">{{ flight.toCode }}</h2>
                         <p class="text-lg font-bold mt-1 text-wood">{{ flight.arrTime }}</p>
                         <div class="airport-tag mt-2 inline-block">
-                            <p class="text-[10px] font-bold text-leaf leading-tight uppercase italic">{{ getAirportInfo(flight.toCode) }}</p>
+                            <p class="text-[10px] font-bold text-leaf leading-tight italic">{{ getAirportInfo(flight.toCode) }}</p>
                         </div>
                     </div>
                 </div>
@@ -126,8 +130,8 @@
                             <p class="text-[10px] opacity-60 font-bold uppercase">Boarding Time</p>
                             <p class="text-3xl font-bold text-wood leading-none">{{ flight.boardingTime }}</p>
                         </div>
-                        <button @click="openNavigation" class="bg-leaf text-white px-5 py-3 rounded-full font-bold shadow-handdrawn active:scale-95 transition-all text-sm">
-                            <i class="fas fa-map-marker-alt"></i> 導航機場
+                        <button @click="openNavigation" class="bg-leaf text-white px-5 py-3 rounded-full font-bold shadow-[4px_4px_0px_#E0E5D5] active:scale-95 transition-all text-sm">
+                            <i class="fas fa-location-arrow"></i> 導航
                         </button>
                     </div>
 
@@ -144,10 +148,10 @@
         </div>
 
         <transition name="fade">
-            <div v-if="isEditing" class="fixed inset-0 z-[100] modal-bg flex items-center justify-center p-6">
+            <div v-if="isEditing" class="fixed inset-0 z-[100] modal-bg flex items-center justify-center p-6 bg-wood/40 backdrop-blur-sm">
                 <div class="bg-paper w-full max-w-sm rounded-animal border-4 border-wood p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
                     <h2 class="text-xl font-bold mb-5 flex items-center gap-2">
-                        <i class="fas fa-plane text-sunset"></i> 設定旅程
+                        <i class="fas fa-plane text-sunset"></i> 設定旅程資料
                     </h2>
                     
                     <div class="space-y-4 font-bold">
@@ -172,21 +176,18 @@
                                 <div>
                                     <label class="text-[10px] opacity-50 uppercase">From (代碼)</label>
                                     <input v-model="tempFlight.fromCode" type="text" maxlength="3" class="w-full bg-transparent border-b-2 border-wood p-1 uppercase mb-2">
-                                    <label class="text-[10px] opacity-50 uppercase">Time</label>
+                                    <label class="text-[10px] opacity-50 uppercase">時間</label>
                                     <input v-model="tempFlight.depTime" type="time" class="w-full bg-transparent">
                                 </div>
                                 <div>
                                     <label class="text-[10px] opacity-50 uppercase">To (代碼)</label>
                                     <input v-model="tempFlight.toCode" type="text" maxlength="3" class="w-full bg-transparent border-b-2 border-wood p-1 uppercase mb-2">
-                                    <label class="text-[10px] opacity-50 uppercase">Time</label>
+                                    <label class="text-[10px] opacity-50 uppercase">時間</label>
                                     <input v-model="tempFlight.arrTime" type="time" class="w-full bg-transparent">
                                 </div>
                             </div>
-                            <div class="mt-3 pt-2 border-t border-dashed border-wood/20">
-                                <p class="text-[9px] text-leaf mb-1">
-                                    <i class="fas fa-info-circle"></i> 自動匹配: {{ getAirportInfo(tempFlight.fromCode) }} → {{ getAirportInfo(tempFlight.toCode) }}
-                                </p>
-                                <label class="text-[10px] text-sunset uppercase block">Boarding Time</label>
+                            <div class="mt-4 pt-2 border-t border-dashed border-wood/20">
+                                <label class="text-[10px] text-sunset uppercase block">Boarding Time (登機時間)</label>
                                 <input v-model="tempFlight.boardingTime" type="time" class="w-full bg-transparent text-lg">
                             </div>
                         </div>
@@ -205,14 +206,14 @@
 
                     <div class="flex gap-3 mt-8">
                         <button @click="isEditing = false" class="flex-1 py-3 border-2 border-wood rounded-full font-bold">返回</button>
-                        <button @click="saveFlight" class="flex-1 py-3 bg-leaf text-white rounded-full font-bold shadow-handdrawn font-bold">確認變更</button>
+                        <button @click="saveFlight" class="flex-1 py-3 bg-leaf text-white rounded-full font-bold shadow-[4px_4px_0px_#E0E5D5] active:scale-95">確認變更</button>
                     </div>
                 </div>
             </div>
         </transition>
 
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-white border-2 border-wood rounded-full p-2 flex justify-around shadow-lg z-50">
-            <button class="w-12 h-12 rounded-full bg-leaf text-white flex items-center justify-center"><i class="fas fa-plane"></i></button>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-white/90 border-2 border-wood rounded-full p-2 flex justify-around shadow-lg z-50">
+            <button class="w-12 h-12 rounded-full bg-leaf text-white flex items-center justify-center shadow-sm"><i class="fas fa-plane"></i></button>
             <button class="w-12 h-12 rounded-full text-wood opacity-20"><i class="fas fa-calendar-day"></i></button>
             <button class="w-12 h-12 rounded-full text-wood opacity-20"><i class="fas fa-coins"></i></button>
             <button class="w-12 h-12 rounded-full text-wood opacity-20"><i class="fas fa-tasks"></i></button>
@@ -222,22 +223,23 @@
     <script>
         const { createApp, ref, reactive, computed, onMounted } = Vue;
         
-        // 機場資料庫
+        // 中文機場資料庫
         const airportMap = {
-            'TPE': 'Taipei, TW',
-            'NRT': 'Tokyo, JP',
-            'HND': 'Tokyo, JP',
-            'HKG': 'Hong Kong, HK',
-            'KIX': 'Osaka, JP',
-            'CTS': 'Sapporo, JP',
-            'ICN': 'Seoul, KR',
-            'BKK': 'Bangkok, TH',
-            'SIN': 'Singapore, SG',
-            'LHR': 'London, UK',
-            'JFK': 'New York, US',
-            'LAX': 'Los Angeles, US',
-            'CDG': 'Paris, FR',
-            'SYD': 'Sydney, AU'
+            'TPE': '台北, 台灣',
+            'NRT': '東京成田, 日本',
+            'HND': '東京羽田, 日本',
+            'HKG': '香港, 中國',
+            'KIX': '大阪, 日本',
+            'CTS': '札幌, 日本',
+            'FUK': '福岡, 日本',
+            'ICN': '首爾, 韓國',
+            'BKK': '曼谷, 泰國',
+            'SIN': '新加坡, 新加坡',
+            'LHR': '倫敦, 英國',
+            'JFK': '紐約, 美國',
+            'LAX': '洛杉磯, 美國',
+            'CDG': '巴黎, 法國',
+            'SYD': '雪梨, 澳洲'
         };
 
         createApp({
@@ -258,7 +260,7 @@
                 const tempFlight = reactive({ ...flight });
 
                 const getAirportInfo = (code) => {
-                    return airportMap[code?.toUpperCase()] || 'Unknown, ??';
+                    return airportMap[code?.toUpperCase()] || '未知, 探索中';
                 };
 
                 const durationText = computed(() => {
@@ -273,12 +275,12 @@
                     const now = currentTime.value;
                     const flightDateStr = `${flight.date} ${flight.year} ${flight.boardingTime}`;
                     const flightDate = new Date(Date.parse(flightDateStr));
-                    if (isNaN(flightDate)) return { msg: "機票還在寫...", icon: "📝", style: "bg-sand/30" };
+                    if (isNaN(flightDate)) return { msg: "機票正在撰寫中...", icon: "📝", style: "bg-sand/30" };
                     const diffMinutes = Math.floor((flightDate - now) / 60000);
 
-                    if (diffMinutes > 1440) return { msg: `離出發還有好幾天呢！先去釣個魚、搖搖樹吧！`, icon: "🍃", style: "bg-leaf/20" };
-                    if (diffMinutes > 60) return { msg: "就是今天了！機票和護照都放進口袋了嗎？狸克也在等你喔！", icon: "🎒", style: "bg-sunset/20" };
-                    if (diffMinutes > 0) return { msg: `登機時間快到了（剩 ${diffMinutes} 分鐘）！準備出發，啾！`, icon: "🔔", style: "bg-sky/30 border-sky" };
+                    if (diffMinutes > 1440) return { msg: `離出發還有 ${Math.ceil(diffMinutes/1440)} 天！先去釣個魚、搖搖樹吧！`, icon: "🍃", style: "bg-leaf/20" };
+                    if (diffMinutes > 60) return { msg: "就是今天了！機票和護照都放進口袋了嗎？期待～", icon: "🎒", style: "bg-sunset/20" };
+                    if (diffMinutes > 0) return { msg: `登機時間快到了（剩 ${diffMinutes} 分鐘）！拿好隨身行李，準備往登機門移動囉，啾！`, icon: "🔔", style: "bg-sky/30 border-sky" };
                     if (diffMinutes > -360) return { msg: "飛機已經出發啦！祝你有個愉快的旅程，希望在無人島也能見到你！", icon: "🏝️", style: "bg-sky/10 border-dashed border-sky" };
                     return { msg: "旅程已經結束啦！希望你在目的地留下了美好的回憶！", icon: "📸", style: "bg-wood/10 opacity-60" };
                 });
@@ -288,10 +290,10 @@
                 const statusStyle = computed(() => statusInfo.value.style);
 
                 const openEdit = () => { Object.assign(tempFlight, flight); isEditing.value = true; };
-                const saveFlight = () => { Object.assign(flight, tempFlight); localStorage.setItem('trip_v6', JSON.stringify(flight)); isEditing.value = false; };
-                const openNavigation = () => { window.open(`http://googleusercontent.com/maps.google.com/4{encodeURIComponent(flight.fromCode + ' Airport')}`, '_blank'); };
+                const saveFlight = () => { Object.assign(flight, tempFlight); localStorage.setItem('trip_v7', JSON.stringify(flight)); isEditing.value = false; };
+                const openNavigation = () => { window.open(`http://maps.google.com/?q=${encodeURIComponent(flight.fromCode + ' Airport')}`, '_blank'); };
 
-                const saved = localStorage.getItem('trip_v6');
+                const saved = localStorage.getItem('trip_v7');
                 if (saved) Object.assign(flight, JSON.parse(saved));
 
                 return { isEditing, flight, tempFlight, durationText, statusMessage, statusIcon, statusStyle, openEdit, saveFlight, openNavigation, getAirportInfo };
