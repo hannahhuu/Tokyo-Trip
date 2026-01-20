@@ -3,219 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Family Trip to Hokkaido 2026</title>
-    
+    <title>森之旅行手帳 - Travel Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'snow-white': '#F0FFFF',
-                        'ice-blue': '#B3E5FC',
-                        'light-snow-blue': '#E5F3F7',
-                        'deep-sea-blue': '#01579B',
-                        'accent-yellow': '#FFD54F',
-                        'soft-gray': '#F5F5F5'
+                        paper: '#F7F4EB',
+                        clay: '#E0E5D5',
+                        leaf: '#88A47C',
+                        wood: '#6B4F3B',
+                        sunset: '#EFAD8E',
+                        water: '#A8D1D1',
+                    },
+                    borderRadius: {
+                        'animal': '24px',
+                    },
+                    boxShadow: {
+                        'soft': '4px 4px 0px #E0E5D5',
                     }
                 }
             }
         }
     </script>
-    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
-        body { background-color: #E5F3F7; font-family: 'Noto Sans TC', sans-serif; color: #334155; }
-        .app-container { max-width: 480px; margin: 0 auto; min-height: 100vh; background-color: #ffffff; box-shadow: 0 0 30px rgba(0, 0, 0, 0.05); position: relative; padding-bottom: 90px; }
-        .header-bg { background-color: #ffffff; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; z-index: 10; }
-        .header-image-container { width: 100%; height: 250px; overflow: hidden; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; }
-        .header-image-container img { width: 100%; height: 100%; object-fit: cover; }
-        .snow-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23fff" opacity="0.8"/><circle cx="20" cy="80" r="0.5" fill="%23fff" opacity="0.6"/><circle cx="70" cy="30" r="1.5" fill="%23fff" opacity="0.9"/></svg>'); background-size: 100px 100px; opacity: 0.7; animation: snowfall 10s linear infinite; z-index: 5; }
-        @keyframes snowfall { to { background-position: 100px 100px; } }
-        .side-tab-bar { position: absolute; bottom: 45px; right: 16px; z-index: 30; display: flex; gap: 8px; }
-        .tab-button { width: 40px; height: 40px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 1.125rem; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); transition: all 0.2s ease; }
-        .tab-button.active { background-color: #01579B; color: #ffffff; }
-        .tab-button:not(.active) { background-color: #ffffff; color: #B3E5FC; }
-        .app-main { padding-top: 25px !important; position: relative; z-index: 5; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F7F4EB;
+            background-image: radial-gradient(#E0E5D5 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            color: #6B4F3B;
+            overscroll-behavior-y: contain;
+        }
+        .tab-active { color: #88A47C; transform: translateY(-4px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .card-shadow { box-shadow: 0 4px 20px rgba(179, 229, 252, 0.3); }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .date-selector-sticky { background-color: #ffffff; border-bottom: 1px solid #f0f0f0; z-index: 20; top: 0; }
+        .active-press { transition: transform 0.1s; }
+        .active-press:active { transform: scale(0.95); }
+        
+        /* 模擬登機證缺口 */
+        .ticket-cut {
+            position: relative;
+        }
+        .ticket-cut::before, .ticket-cut::after {
+            content: '';
+            position: absolute;
+            bottom: 40px;
+            width: 20px;
+            height: 20px;
+            background: #F7F4EB;
+            border-radius: 50%;
+        }
+        .ticket-cut::before { left: -10px; }
+        .ticket-cut::after { right: -10px; }
     </style>
 </head>
-<body>
+<body class="pb-24">
+    <div id="app">
+        <header class="p-6 pb-2">
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                <i class="fas fa-leaf text-leaf"></i> {{ currentTabTitle }}
+            </h1>
+        </header>
 
-<div id="app" class="app-container">
-    <div class="header-bg relative">
-        <div class="header-image-container">
-            <img src="IMG_4330.PNG" alt="北海道家族旅行計畫">
-        </div>
-        <div class="snow-layer"></div> 
-        <div class="side-tab-bar">
-            <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id" :class="{'active': currentTab === tab.id}" class="tab-button">
-                <i :class="tab.icon"></i>
-            </button>
-        </div>
-    </div>
+        <main class="px-5">
+            
+            <div v-if="activeTab === 'schedule'" class="space-y-6">
+                <div class="flex gap-3 overflow-x-auto hide-scrollbar py-2">
+                    <div v-for="d in 5" :key="d" 
+                         @click="selectedDate = d"
+                         :class="selectedDate === d ? 'bg-leaf text-white shadow-soft' : 'bg-white border-2 border-clay'"
+                         class="flex-shrink-0 w-16 h-20 rounded-animal flex flex-col items-center justify-center cursor-pointer active-press">
+                        <span class="text-xs">Day</span>
+                        <span class="text-xl font-bold">{{ d }}</span>
+                    </div>
+                </div>
 
-    <main class="p-4 app-main">
-        <div v-if="currentTab === 'itinerary'" class="animate-fade-in">
-            <div class="flex items-center space-x-2 sticky date-selector-sticky pt-1 -mx-4 px-4 mb-2">
-                <button @click="showDateEditModal = true" class="flex-shrink-0 w-10 h-[68px] bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center hover:bg-ice-blue hover:text-deep-sea-blue transition-colors">
-                    <i class="fa-solid fa-calendar-check"></i>
-                </button>
+                <div class="bg-water/30 p-4 rounded-animal border-2 border-water flex items-center justify-between">
+                    <div>
+                        <p class="font-bold">今日天氣：晴時多雲</p>
+                        <p class="text-sm">氣溫：22°C - 26°C</p>
+                    </div>
+                    <i class="fas fa-cloud-sun text-4xl text-white"></i>
+                </div>
+
+                <div class="space-y-4 relative before:content-[''] before:absolute before:left-4 before:top-0 before:bottom-0 before:w-1 before:bg-clay">
+                    <div v-for="item in scheduleItems" :key="item.time" class="relative pl-10">
+                        <div class="absolute left-2.5 top-2 w-4 h-4 rounded-full bg-leaf border-4 border-white"></div>
+                        <div class="bg-white p-4 rounded-animal shadow-soft border-2 border-clay active-press" @click="openGoogleMaps(item.location)">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-xs font-bold px-2 py-1 rounded-full bg-clay text-wood">{{ item.time }}</span>
+                                <span :class="item.typeColor" class="text-xs text-white px-2 py-1 rounded-full">{{ item.category }}</span>
+                            </div>
+                            <h3 class="font-bold text-lg leading-tight">{{ item.title }}</h3>
+                            <p class="text-sm opacity-70 mt-1"><i class="fas fa-location-dot"></i> {{ item.location }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="activeTab === 'bookings'" class="space-y-6">
+                <div class="bg-white rounded-animal border-2 border-clay shadow-soft ticket-cut overflow-hidden">
+                    <div class="bg-sunset p-4 text-white flex justify-between">
+                        <span class="font-bold">星宇航空 JX801</span>
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <div class="p-6 flex justify-between items-center border-b-2 border-dashed border-clay pb-10">
+                        <div class="text-center">
+                            <p class="text-2xl font-bold">TPE</p>
+                            <p class="text-xs opacity-60">台北</p>
+                        </div>
+                        <i class="fas fa-arrow-right text-clay"></i>
+                        <div class="text-center">
+                            <p class="text-2xl font-bold">NRT</p>
+                            <p class="text-xs opacity-60">東京成田</p>
+                        </div>
+                    </div>
+                    <div class="p-4 flex justify-between text-sm">
+                        <span>GATE: B7</span>
+                        <span>SEAT: 22A</span>
+                        <span class="font-bold">10:30 AM</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-animal border-2 border-clay shadow-soft overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=60" class="w-full h-32 object-cover" />
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg">星野度假村 - 輕井澤</h3>
+                        <p class="text-xs opacity-70 mb-2 italic text-leaf">Check-in: 15:00</p>
+                        <button class="w-full py-2 bg-clay/30 rounded-full text-sm font-bold active-press">查看入住憑證</button>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="activeTab === 'expense'" class="space-y-6">
+                <div class="bg-leaf p-6 rounded-animal shadow-soft text-white">
+                    <p class="text-sm opacity-80">目前總支出 (HKD)</p>
+                    <h2 class="text-4xl font-bold">$ 12,450.00</h2>
+                    <div class="mt-4 flex gap-4 text-xs">
+                        <span class="bg-white/20 px-2 py-1 rounded">JPY 250,000</span>
+                        <span class="bg-white/20 px-2 py-1 rounded">Rate: 0.052</span>
+                    </div>
+                </div>
                 
-                <div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-4 snap-x flex-1">
-                    <div v-for="(day, index) in dates" :key="index" 
-                         @click="selectedDateIndex = index"
-                         class="snap-center flex-shrink-0 w-[58px] h-[68px] rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border-2 shadow-sm"
-                         :class="selectedDateIndex === index ? 'bg-deep-sea-blue text-white border-deep-sea-blue shadow-lg scale-105' : 'bg-white text-slate-400 border-white hover:bg-soft-gray'">
-                        <span class="text-sm font-bold uppercase tracking-wider">{{ day.weekday }}</span> 
-                        <span class="text-xs font-medium opacity-70">{{ day.date }}</span> 
+                <button class="w-full py-4 bg-white border-2 border-clay rounded-animal shadow-soft font-bold active-press">
+                    <i class="fas fa-plus-circle text-leaf"></i> 新增一筆消費
+                </button>
+
+                <div class="space-y-3">
+                    <div v-for="i in 3" class="bg-white p-4 rounded-animal border-2 border-clay flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-sunset/20 flex items-center justify-center text-sunset">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold">拉麵一蘭</p>
+                                <p class="text-xs opacity-50">下午 1:20 · 小明支付</p>
+                            </div>
+                        </div>
+                        <p class="font-bold">¥ 1,200</p>
                     </div>
                 </div>
             </div>
 
-            <div v-if="weatherData[selectedDateIndex]" class="mb-4 bg-snow-white border border-ice-blue rounded-2xl p-4 flex justify-between items-center shadow-md">
-                <div class="flex items-start text-deep-sea-blue space-x-4">
-                    <i :class="getWeatherIcon(weatherData[selectedDateIndex].condition)" class="text-5xl text-blue-500"></i>
-                    <div class="pt-1">
-                        <span class="text-3xl font-extrabold leading-none">{{ weatherData[selectedDateIndex].temp.split('/')[0] }}°</span>
-                        <span class="text-sm font-light text-slate-500 ml-1">/ {{ weatherData[selectedDateIndex].temp.split('/')[1] }}°C</span>
+            <div v-if="activeTab === 'planning'" class="space-y-4">
+                <div class="bg-white p-5 rounded-animal border-2 border-clay shadow-soft">
+                    <h3 class="font-bold mb-3 flex items-center gap-2"><i class="fas fa-check-square text-leaf"></i> 待辦清單</h3>
+                    <div class="space-y-2">
+                        <label v-for="todo in todos" class="flex items-center gap-3 p-2 bg-paper rounded-lg">
+                            <input type="checkbox" class="w-5 h-5 accent-leaf">
+                            <span class="text-sm">{{ todo }}</span>
+                        </label>
                     </div>
                 </div>
-                <div class="text-right text-xs text-slate-600">
-                    <span class="font-bold block text-slate-700">{{ getWeatherDescription(weatherData[selectedDateIndex].condition) }}</span>
-                    <span v-if="dates[selectedDateIndex].hasCar" class="mt-1 block text-deep-sea-blue font-bold"><i class="fa-solid fa-car-side mr-1 text-accent-yellow"></i> 租車日</span>
+                
+                <div class="bg-white p-5 rounded-animal border-2 border-clay shadow-soft">
+                    <h3 class="font-bold mb-3 flex items-center gap-2"><i class="fas fa-bag-shopping text-sunset"></i> 購物清單</h3>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div class="p-2 border border-clay rounded-lg">合利他命 EX</div>
+                        <div class="p-2 border border-clay rounded-lg">洗面乳補充包</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="space-y-4">
-                <div v-for="(item, idx) in currentItinerary" :key="item.id" class="bg-white rounded-3xl p-5 card-shadow relative border border-ice-blue/50">
-                    <h3 class="text-lg font-bold text-slate-800">{{ item.name }}</h3>
-                    <p class="text-sm text-slate-500">{{ item.startTime }} - {{ item.address }}</p>
-                </div>
-                <div v-if="currentItinerary.length === 0" class="text-center py-16 text-slate-300">
-                    <i class="fa-solid fa-map-location-dot text-5xl mb-3"></i>
-                    <p>本日尚無行程</p>
-                </div>
-            </div>
-        </div>
-        
         </main>
 
-    <button v-if="currentTab !== 'info'" @click="handleAddClick" class="fixed bottom-6 right-6 w-14 h-14 bg-accent-yellow rounded-full shadow-lg text-deep-sea-blue text-2xl flex items-center justify-center z-40">
-        <i class="fa-solid fa-plus"></i>
-    </button>
-
-    <div v-if="showDateEditModal" class="fixed inset-0 bg-black/50 z-50 flex items-end justify-center backdrop-blur-sm">
-        <div class="bg-white rounded-t-3xl w-full max-w-md p-6 animate-fade-in" style="max-height: 80vh; overflow-y: auto;">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="font-bold text-xl text-slate-800">修改行程日期</h3>
-                <button @click="showDateEditModal = false" class="text-slate-400 text-xl"><i class="fa-solid fa-xmark"></i></button>
+        <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-clay px-6 py-4 flex justify-between items-center z-50 rounded-t-animal">
+            <div v-for="tab in tabs" :key="tab.id" 
+                 @click="activeTab = tab.id"
+                 :class="activeTab === tab.id ? 'tab-active font-bold' : 'opacity-40'"
+                 class="flex flex-col items-center gap-1 transition-all duration-300 cursor-pointer">
+                <i :class="tab.icon" class="text-xl"></i>
+                <span class="text-[10px]">{{ tab.name }}</span>
             </div>
-            
-            <div class="space-y-4 mb-6">
-                <div v-for="(day, index) in dates" :key="index" class="flex items-center space-x-3 bg-slate-50 p-3 rounded-2xl">
-                    <div class="w-12 h-12 bg-deep-sea-blue text-white rounded-xl flex flex-col items-center justify-center font-bold">
-                        <span class="text-[10px]">DAY</span>
-                        <span>{{ index + 1 }}</span>
-                    </div>
-                    <div class="flex-1">
-                        <input type="text" v-model="day.date" placeholder="MM/DD" @input="updateWeekday(index)"
-                               class="w-full bg-transparent border-b-2 border-slate-200 focus:border-deep-sea-blue outline-none py-1 font-bold">
-                    </div>
-                    <div class="w-16 text-center">
-                        <span class="text-sm text-slate-500 font-bold bg-white px-2 py-1 rounded shadow-sm border border-slate-100">{{ day.weekday }}</span>
-                    </div>
-                </div>
-            </div>
-            
-            <button @click="showDateEditModal = false" class="w-full py-4 bg-deep-sea-blue text-white rounded-2xl font-bold shadow-lg">確認更新</button>
-        </div>
+        </nav>
     </div>
-</div>
 
-<script>
-    const { createApp, ref, computed } = Vue;
+    <script>
+        const { createApp, ref, computed } = Vue;
 
-    createApp({
-        setup() {
-            const currentTab = ref('itinerary');
-            const selectedDateIndex = ref(0);
-            const showDateEditModal = ref(false);
-            
-            const tabs = [
-                { id: 'itinerary', icon: 'fa-solid fa-map-location-dot' },
-                { id: 'info', icon: 'fa-solid fa-circle-info' },
-                { id: 'shopping', icon: 'fa-solid fa-basket-shopping' },
-                { id: 'expenses', icon: 'fa-solid fa-coins' }
-            ];
+        createApp({
+            setup() {
+                const activeTab = ref('schedule');
+                const selectedDate = ref(1);
+                
+                const tabs = [
+                    { id: 'schedule', name: '行程', icon: 'fas fa-calendar-alt' },
+                    { id: 'bookings', name: '預訂', icon: 'fas fa-ticket' },
+                    { id: 'expense', name: '記帳', icon: 'fas fa-coins' },
+                    { id: 'planning', name: '準備', icon: 'fas fa-clipboard-list' }
+                ];
 
-            const dates = ref([
-                { date: '02/01', weekday: 'SUN', hasCar: false },
-                { date: '02/02', weekday: 'MON', hasCar: true },
-                { date: '02/03', weekday: 'TUE', hasCar: true },
-                { date: '02/04', weekday: 'WED', hasCar: true },
-                { date: '02/05', weekday: 'THU', hasCar: true },
-                { date: '02/06', weekday: 'FRI', hasCar: true },
-                { date: '02/07', weekday: 'SAT', hasCar: false }
-            ]);
+                const currentTabTitle = computed(() => {
+                    return tabs.find(t => t.id === activeTab.value).name + '規劃';
+                });
 
-            const weatherData = ref([
-                { condition: 'snow', temp: '-2/-8', feel: '-11' },
-                { condition: 'cloudy', temp: '0/-5', feel: '-4' },
-                { condition: 'snow', temp: '-3/-9', feel: '-12' },
-                { condition: 'clear', temp: '1/-4', feel: '-2' },
-                { condition: 'cloudy', temp: '-1/-6', feel: '-5' },
-                { condition: 'snow', temp: '-4/-10', feel: '-14' },
-                { condition: 'clear', temp: '2/-3', feel: '0' }
-            ]);
+                const scheduleItems = [
+                    { time: '09:00', title: '成田機場接機', location: 'Narita Airport', category: '交通', typeColor: 'bg-sunset' },
+                    { time: '12:30', title: '淺草寺雷門漫步', location: 'Senso-ji', category: '景點', typeColor: 'bg-leaf' },
+                    { time: '14:00', title: '附近天婦羅午餐', location: 'Asakusa Tanaka', category: '美食', typeColor: 'bg-orange-400' },
+                    { time: '18:00', title: '入住飯店', location: 'Shinjuku Prince Hotel', category: '住宿', typeColor: 'bg-water' },
+                ];
 
-            const itineraries = ref({
-                0: [{ id: 1, name: '新千歲機場', startTime: '13:15', address: '千歲市', category: 'transport' }],
-                1: [{ id: 2, name: '札幌電視塔', startTime: '10:00', address: '札幌市中央區', category: 'spot' }]
-            });
+                const todos = ['更換日幣', '確認漫遊流量', '下載數位憑證', '準備環保餐具'];
 
-            const currentItinerary = computed(() => itineraries.value[selectedDateIndex.value] || []);
+                const openGoogleMaps = (loc) => {
+                    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`;
+                    window.open(url, '_blank');
+                };
 
-            // 自動更新星期功能
-            const updateWeekday = (index) => {
-                const dateStr = dates.value[index].date;
-                if (dateStr.length === 5 && dateStr.includes('/')) {
-                    const [month, day] = dateStr.split('/');
-                    const year = 2026; // 你的標題是 2026
-                    const dateObj = new Date(year, parseInt(month) - 1, parseInt(day));
-                    if (!isNaN(dateObj)) {
-                        const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-                        dates.value[index].weekday = weekdays[dateObj.getDay()];
-                    }
+                return {
+                    activeTab, tabs, currentTabTitle, selectedDate, scheduleItems, todos, openGoogleMaps
                 }
-            };
-
-            const getWeatherIcon = (cond) => {
-                const icons = { 'snow': 'fa-solid fa-snowflake', 'cloudy': 'fa-solid fa-cloud', 'clear': 'fa-solid fa-sun' };
-                return icons[cond] || 'fa-solid fa-cloud-sun';
-            };
-
-            const getWeatherDescription = (cond) => {
-                const desc = { 'snow': '大雪注意', 'cloudy': '多雲時晴', 'clear': '晴朗低溫' };
-                return desc[cond] || '天氣穩定';
-            };
-
-            return {
-                currentTab, tabs, dates, selectedDateIndex, showDateEditModal,
-                currentItinerary, weatherData,
-                updateWeekday, getWeatherIcon, getWeatherDescription
-            };
-        }
-    }).mount('#app');
-</script>
-
+            }
+        }).mount('#app');
+    </script>
 </body>
 </html>
